@@ -43,18 +43,17 @@ const sendTelegramMessage = async (text) => {
 	return await response.json();
 };
 const sendDiscordMessage = async (text) => {
-	const webhookUrl = 'YOUR_DISCORD_WEBHOOK_URL';
-	const response = await fetch(config.discord.webhookUrl, {
-		method: 'POST',
-		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify({
-			content: text
-		})
-	});
-	if (!response.ok) {
-		throw new Error(`[Discord] Failed to send message: ${response.statusText}`);
+	try {
+		const response = await fetch(config.discord.webhookUrl, {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ content: text })
+		});
+		const data = await response.json();
+		return data;
+	} catch (error) {
+		console.error('Error sending Discord message:', error);
 	}
-	return await response.json();
 };
 const sendSMSMessage = async (text) => {
 	const response = await fetch(`https://api.twilio.com/2010-04-01/Accounts/${config.twilio.accountSid}/Messages.json`, {
@@ -112,16 +111,20 @@ const sendEmailMessage = async (text) => {
 	return await response.json();
 };
 const sendNotification = async (message) => {
-	if(config.telegram?.botToken && config.telegram?.chatId)
-		await sendTelegramMessage(message);
-	if(config.slack?.botToken && config.slack?.channelId)
-		await sendSlackMessage(message);
-	if(config.discord?.webhookUrl)
-		await sendDiscordMessage(message);
-	if(config.twilio?.accountSid && config.twilio?.accountToken && config.twilio?.toNumber && config.twilio?.twilioNumber)
-		await sendSMSMessage(message);
-	if(config.sendgrid?.apiKey && config.sendgrid?.toEmail && config.sendgrid?.toFromEmail)
-		await sendEmailMessage(message);
+	try {
+		if(config.telegram?.botToken && config.telegram?.chatId)
+			await sendTelegramMessage(message);
+		if(config.slack?.botToken && config.slack?.channelId)
+			await sendSlackMessage(message);
+		if(config.discord?.webhookUrl)
+			await sendDiscordMessage(message);
+		if(config.twilio?.accountSid && config.twilio?.accountToken && config.twilio?.toNumber && config.twilio?.twilioNumber)
+			await sendSMSMessage(message);
+		if(config.sendgrid?.apiKey && config.sendgrid?.toEmail && config.sendgrid?.toFromEmail)
+			await sendEmailMessage(message);
+	} catch (error) {
+		console.error('Error sending notification:', error);
+	}
 }
 
 while(true) {
@@ -131,7 +134,13 @@ while(true) {
 	try {
 		try {
 			status = JSON.parse((await fs.readFile(statusFile)).toString()); // We re-read the file each time in case it was manually modified.
-		} catch(e) {console.error(`Could not find status.json file [${statusFile}], will create it.`)}
+		} catch(e) {
+			if (e instanceof SyntaxError) {
+				console.error(`Syntax error in status.json file [${statusFile}]:`, e);
+			} else {
+				console.error(`Could not find status.json file [${statusFile}], will create it.`);
+			}
+		}
 		status = status || {};
 		status.sites = status.sites || {};
 		status.config = {
