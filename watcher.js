@@ -127,6 +127,34 @@ const sendNotification = async (message) => {
 	}
 }
 
+const checkOnionService = async (host, port) => {
+    try {
+        const net = require('net');
+        return new Promise((resolve) => {
+            const socket = new net.Socket();
+            socket.setTimeout(5000);
+            
+            socket.on('connect', () => {
+                socket.destroy();
+                resolve({ success: true, duration: 0 });
+            });
+            
+            socket.on('error', (err) => {
+                resolve({ success: false, error: err.message });
+            });
+            
+            socket.on('timeout', () => {
+                socket.destroy();
+                resolve({ success: false, error: 'Connection timeout' });
+            });
+            
+            socket.connect(port, host);
+        });
+    } catch (e) {
+        return { success: false, error: e.message };
+    }
+};
+
 while(true) {
 	config.verbose && console.log('🔄 Pulse');
 	let startPulse = Date.now();
@@ -187,48 +215,61 @@ while(true) {
 					let start;
 					
 					try {
-						performance.clearResourceTimings();
-						start = performance.now();
-						let response = await fetch(endpoint.url, {
-							signal: AbortSignal.timeout(config.timeout),
-							...endpoint.request,
-						});
-						let content = await response.text();
-						await delay(0); // Ensures that the entry was registered.
-						let perf = performance.getEntriesByType('resource')[0];
-						if(perf) {
-							endpointStatus.dur = perf.responseEnd - perf.startTime; // total request duration
-							endpointStatus.dns = perf.domainLookupEnd - perf.domainLookupStart; // DNS Lookup
-							endpointStatus.tcp = perf.connectEnd - perf.connectStart; // TCP handshake time
-							endpointStatus.ttfb = perf.responseStart - perf.requestStart; // time to first byte -> Latency
-							endpointStatus.dll = perf.responseEnd - perf.responseStart; // time for content download
-						} else { // backup in case entry was not registered
-							endpointStatus.dur = performance.now() - start;
-							endpointStatus.ttfb = endpointStatus.dur;
-							config.verbose && console.log(`\tCould not use PerformanceResourceTiming API to measure request.`);
-						}
+						if (endpoint.url.includes('.onion')) {
+							const [host, port] = endpoint.url.split(':');
+							const result = await checkOnionService('127.0.0.1', port || 8333);
+							
+							endpointStatus.t = Date.now();
+							endpointStatus.dur = 0;
+							endpointStatus.ttfb = 0;
+							
+							if (!result.success) {
+								endpointStatus.err = `Onion service check failed: ${result.error}`;
+							}
+						} else {
+							performance.clearResourceTimings();
+							start = performance.now();
+							let response = await fetch(endpoint.url, {
+								signal: AbortSignal.timeout(config.timeout),
+								...endpoint.request,
+							});
+							let content = await response.text();
+							await delay(0); // Ensures that the entry was registered.
+							let perf = performance.getEntriesByType('resource')[0];
+							if(perf) {
+								endpointStatus.dur = perf.responseEnd - perf.startTime; // total request duration
+								endpointStatus.dns = perf.domainLookupEnd - perf.domainLookupStart; // DNS Lookup
+								endpointStatus.tcp = perf.connectEnd - perf.connectStart; // TCP handshake time
+								endpointStatus.ttfb = perf.responseStart - perf.requestStart; // time to first byte -> Latency
+								endpointStatus.dll = perf.responseEnd - perf.responseStart; // time for content download
+							} else { // backup in case entry was not registered
+								endpointStatus.dur = performance.now() - start;
+								endpointStatus.ttfb = endpointStatus.dur;
+								config.verbose && console.log(`\tCould not use PerformanceResourceTiming API to measure request.`);
+							}
 
-						// HTTP Status Check
-						if(!endpoint.validStatus && !response.ok) {
-							endpointStatus.err = `HTTP Status ${response.status}: ${response.statusText}`;
-							continue;
-						} else if(endpoint.validStatus && ((Array.isArray(endpoint.validStatus) && !endpoint.validStatus.includes(response.status)) || (!Array.isArray(endpoint.validStatus) && endpoint.validStatus!=response.status))) {
-							endpointStatus.err = `HTTP Status ${response.status}: ${response.statusText}`;
-							continue;
-						}
+							// HTTP Status Check
+							if(!endpoint.validStatus && !response.ok) {
+								endpointStatus.err = `HTTP Status ${response.status}: ${response.statusText}`;
+								continue;
+							} else if(endpoint.validStatus && ((Array.isArray(endpoint.validStatus) && !endpoint.validStatus.includes(response.status)) || (!Array.isArray(endpoint.validStatus) && endpoint.validStatus!=response.status))) {
+								endpointStatus.err = `HTTP Status ${response.status}: ${response.statusText}`;
+								continue;
+							}
 
-						// Content checks
-						if(endpoint.mustFind && !await checkContent(content, endpoint.mustFind)) {
-							endpointStatus.err = '"mustFind" check failed';
-							continue;
-						}
-						if(endpoint.mustNotFind && !await checkContent(content, endpoint.mustNotFind, true)) {
-							endpointStatus.err = '"mustNotFind" check failed';
-							continue;
-						}
-						if(endpoint.customCheck && typeof endpoint.customCheck == 'function' && !await Promise.resolve(endpoint.customCheck(content, response))) {
-							endpointStatus.err = '"customCheck" check failed';
-							continue;
+							// Content checks
+							if(endpoint.mustFind && !await checkContent(content, endpoint.mustFind)) {
+								endpointStatus.err = '"mustFind" check failed';
+								continue;
+							}
+							if(endpoint.mustNotFind && !await checkContent(content, endpoint.mustNotFind, true)) {
+								endpointStatus.err = '"mustNotFind" check failed';
+								continue;
+							}
+							if(endpoint.customCheck && typeof endpoint.customCheck == 'function' && !await Promise.resolve(endpoint.customCheck(content, response))) {
+								endpointStatus.err = '"customCheck" check failed';
+								continue;
+							}
 						}
 					} catch(e) {
 						endpointStatus.err = String(e);
