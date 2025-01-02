@@ -88,7 +88,7 @@ export default {
 							return false;
 						}
 					},
-					validStatus		: [200, 'SOCKET'], // optional, Which http status should be considered non errors [defaults to 200-299]
+					validStatus		: ['SOCKET'], // optional, Which http status should be considered non errors [defaults to 200-299]
 				},
 				{
 					id				: 'fs', // optional
