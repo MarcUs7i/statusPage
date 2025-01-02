@@ -1,3 +1,5 @@
+import { SocksProxyAgent } from 'socks-proxy-agent';
+
 export default {
 	interval			: 1440, // Interval in minutes between each pulse; 1 day (24 * 60)
 	nDataPoints			: 90, // Number of datapoints to display on the dashboard
@@ -50,43 +52,43 @@ export default {
 					validStatus		: [200], // optional, Which http status should be considered non errors [defaults to 200-299]
 				},
 				{
-					id				: 'airin', // optional
-					name			: 'Airin', // optional
-					link			: 'https://airin.marcus7i.net', // optional, for notifications and dashboard only, [defaults to endpoint.url], can be disabled by setting it to false
-					url				: 'https://airin.marcus7i.net', // required
+					id				: 'btcnd-onion', // optional
+					name			: 'Bitcoin Node (Onion)', // optional
+					link			: false, // optional, for notifications and dashboard only, [defaults to endpoint.url], can be disabled by setting it to false
+					url				: 'erkuzp5gzrcjqtrcuiku5whcjnioalwskgo3hjg5oq2mmailml7k7jad.onion:8333', // required
 					request			: { // optional, fetch options
 						method: 'GET',
+						agent: new SocksProxyAgent('socks5h://127.0.0.1:9050')
 					},
-					mustFind		: 'Airin', // optional, String | Array | Regex | Function | AsyncFunction
-					mustNotFind		: ["Page not found", "cloudflare"], // optional, String | Array | Regex | Function | AsyncFunction
-					customCheck		: async (content, response)=>{return true;}, // optional, Function | AsyncFunction -> Run your own custom checks return false in case of errors
-					validStatus		: [200], // optional, Which http status should be considered non errors [defaults to 200-299]
-				},
-				{
-					id				: 'anywave', // optional
-					name			: 'Anywave', // optional
-					link			: 'https://anywave.marcus7i.net', // optional, for notifications and dashboard only, [defaults to endpoint.url], can be disabled by setting it to false
-					url				: 'https://anywave.marcus7i.net', // required
-					request			: { // optional, fetch options
-						method: 'GET',
+					customCheck: async (content, response) => {
+						// Bitcoin protocol version check
+						try {
+							const net = require('net');
+							return new Promise((resolve) => {
+								const socket = new net.Socket();
+								socket.setTimeout(5000); // 5 second timeout
+								
+								socket.on('connect', () => {
+									socket.destroy();
+									resolve(true);
+								});
+								
+								socket.on('error', () => {
+									resolve(false);
+								});
+								
+								socket.on('timeout', () => {
+									socket.destroy();
+									resolve(false);
+								});
+								
+								socket.connect(8333, '127.0.0.1');
+							});
+						} catch (e) {
+							return false;
+						}
 					},
-					mustFind		: 'Anywave', // optional, String | Array | Regex | Function | AsyncFunction
-					mustNotFind		: ["Page not found", "cloudflare"], // optional, String | Array | Regex | Function | AsyncFunction
-					customCheck		: async (content, response)=>{return true;}, // optional, Function | AsyncFunction -> Run your own custom checks return false in case of errors
-					validStatus		: [200], // optional, Which http status should be considered non errors [defaults to 200-299]
-				},
-				{
-					id				: 'btcnd', // optional
-					name			: 'Bitcoin Node', // optional
-					link			: 'https://btcnd.marcus7i.net', // optional, for notifications and dashboard only, [defaults to endpoint.url], can be disabled by setting it to false
-					url				: 'https://btcnd.marcus7i.net', // required
-					request			: { // optional, fetch options
-						method: 'GET',
-					},
-					mustFind		: 'Anywave', // optional, String | Array | Regex | Function | AsyncFunction
-					mustNotFind		: ["Page not found", "cloudflare"], // optional, String | Array | Regex | Function | AsyncFunction
-					customCheck		: async (content, response)=>{return true;}, // optional, Function | AsyncFunction -> Run your own custom checks return false in case of errors
-					validStatus		: [200, 520], // optional, Which http status should be considered non errors [defaults to 200-299]
+					validStatus		: [200, 'SOCKET'], // optional, Which http status should be considered non errors [defaults to 200-299]
 				},
 				{
 					id				: 'fs', // optional
@@ -167,17 +169,42 @@ export default {
 					validStatus		: [200], // optional, Which http status should be considered non errors [defaults to 200-299]
 				},
 				{
-					id				: 'xmrnd', // optional
-					name			: 'Monero Node', // optional
-					link			: 'https://xmrnd.marcus7i.net', // optional, for notifications and dashboard only, [defaults to endpoint.url], can be disabled by setting it to false
+					id				: 'xmrnd-onion', // optional
+					name			: 'Monero Node (Onion)', // optional
+					link			: false, // optional, for notifications and dashboard only, [defaults to endpoint.url], can be disabled by setting it to false
 					url				: 'https://xmrnd.marcus7i.net', // required
 					request			: { // optional, fetch options
 						method: 'GET',
+						agent: new SocksProxyAgent('socks5h://127.0.0.1:9050')
 					},
-					mustFind		: '', // optional, String | Array | Regex | Function | AsyncFunction
-					mustNotFind		: ["Page not found", "cloudflare"], // optional, String | Array | Regex | Function | AsyncFunction
-					customCheck		: async (content, response)=>{return true;}, // optional, Function | AsyncFunction -> Run your own custom checks return false in case of errors
-					validStatus		: [200], // optional, Which http status should be considered non errors [defaults to 200-299]
+					customCheck: async (content, response) => {
+						try {
+							const net = require('net');
+							return new Promise((resolve) => {
+								const socket = new net.Socket();
+								socket.setTimeout(5000);
+								
+								socket.on('connect', () => {
+									socket.destroy();
+									resolve(true);
+								});
+								
+								socket.on('error', () => {
+									resolve(false);
+								});
+								
+								socket.on('timeout', () => {
+									socket.destroy();
+									resolve(false);
+								});
+								
+								socket.connect(18081, '127.0.0.1');
+							});
+						} catch (e) {
+							return false;
+						}
+					},
+					validStatus		: [200, 'SOCKET'], // optional, Which http status should be considered non errors [defaults to 200-299]
 				}
 			]
 		}
