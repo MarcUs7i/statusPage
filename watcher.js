@@ -1,4 +1,5 @@
 import {promises as fs, watchFile} from 'fs';
+import net from 'net';
 let config = (await import('./config.js')).default;
 
 watchFile('./config.js', async ()=>{ // Dynamically reload config and watch it for changes.
