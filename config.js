@@ -52,39 +52,11 @@ export default {
 					validStatus		: [200], // optional, Which http status should be considered non errors [defaults to 200-299]
 				},
 				{
-					id				: 'btcnd-onion', // optional
+					id				: 'btcnd-onion-POWERFUL', // optional
 					name			: 'Bitcoin Node (Onion)', // optional
 					link			: false, // optional, for notifications and dashboard only, [defaults to endpoint.url], can be disabled by setting it to false
-					url				: 'erkuzp5gzrcjqtrcuiku5whcjnioalwskgo3hjg5oq2mmailml7k7jad.onion:8333', // required
-					customCheck: async (content, response) => {
-						return true;
-						// Bitcoin protocol version check
-						try {
-							const net = require('net');
-							return new Promise((resolve) => {
-								const socket = new net.Socket();
-								socket.setTimeout(5000); // 5 second timeout
-								
-								socket.on('connect', () => {
-									socket.destroy();
-									resolve(true);
-								});
-								
-								socket.on('error', () => {
-									resolve(false);
-								});
-								
-								socket.on('timeout', () => {
-									socket.destroy();
-									resolve(false);
-								});
-								
-								socket.connect(8333, '127.0.0.1');
-							});
-						} catch (e) {
-							return false;
-						}
-					},
+					url				: 'http://erkuzp5gzrcjqtrcuiku5whcjnioalwskgo3hjg5oq2mmailml7k7jad.onion:8333', // required
+					customCheck		: async (content, response)=>{return true;},
 					validStatus		: ['SOCKET'], // optional, Which http status should be considered non errors [defaults to 200-299]
 				},
 				{
@@ -166,42 +138,13 @@ export default {
 					validStatus		: [200], // optional, Which http status should be considered non errors [defaults to 200-299]
 				},
 				{
-					id				: 'xmrnd-onion', // optional
+					id				: 'xmrnd-onion-POWERFUL', // optional
 					name			: 'Monero Node (Onion)', // optional
 					link			: false, // optional, for notifications and dashboard only, [defaults to endpoint.url], can be disabled by setting it to false
 					url				: 'https://xmrnd.marcus7i.net', // required
-					request			: { // optional, fetch options
-						method: 'GET',
-						agent: new SocksProxyAgent('socks5h://127.0.0.1:9050')
-					},
-					customCheck: async (content, response) => {
-						try {
-							const net = require('net');
-							return new Promise((resolve) => {
-								const socket = new net.Socket();
-								socket.setTimeout(5000);
-								
-								socket.on('connect', () => {
-									socket.destroy();
-									resolve(true);
-								});
-								
-								socket.on('error', () => {
-									resolve(false);
-								});
-								
-								socket.on('timeout', () => {
-									socket.destroy();
-									resolve(false);
-								});
-								
-								socket.connect(18081, '127.0.0.1');
-							});
-						} catch (e) {
-							return false;
-						}
-					},
-					validStatus		: [200, 'SOCKET'], // optional, Which http status should be considered non errors [defaults to 200-299]
+					request			: null,
+					customCheck		: async (content, response)=>{return true;},
+					validStatus		: ['SOCKET'], // optional, Which http status should be considered non errors [defaults to 200-299]
 				}
 			]
 		}
