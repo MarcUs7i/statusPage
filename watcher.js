@@ -130,7 +130,6 @@ const sendNotification = async (message) => {
 
 const checkOnionService = async (host, port) => {
     try {
-        const net = require('net');
         return new Promise((resolve) => {
             const socket = new net.Socket();
             socket.setTimeout(5000);
