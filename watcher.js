@@ -216,7 +216,7 @@ while(true) {
 					
 					try {
 						if (endpoint.url.includes('.onion')) {
-							const [host, port] = endpoint.url.split(':');
+							[host, port] = endpoint.url.split(':');
 							host = endpoint.id.includes('-POWERFUL') ? '192.168.0.106' : '127.0.0.1';
 							const result = await checkOnionService(host, port || 8333);
 							
