@@ -56,10 +56,7 @@ export default {
 					name			: 'Bitcoin Node (Onion)', // optional
 					link			: false, // optional, for notifications and dashboard only, [defaults to endpoint.url], can be disabled by setting it to false
 					url				: 'erkuzp5gzrcjqtrcuiku5whcjnioalwskgo3hjg5oq2mmailml7k7jad.onion:8333', // required
-					request			: { // optional, fetch options
-						method: 'GET',
-						agent: new SocksProxyAgent('socks5h://127.0.0.1:9050')
-					},
+					request			: null,
 					customCheck: async (content, response) => {
 						// Bitcoin protocol version check
 						try {
