@@ -80,7 +80,7 @@ export default {
 					request			: { // optional, fetch options
 						method: 'GET',
 					},
-					mustFind		: 'Home', // optional, String | Array | Regex | Function | AsyncFunction
+					mustFind		: '', // optional, String | Array | Regex | Function | AsyncFunction
 					mustNotFind		: ["Page not found", "cloudflare"], // optional, String | Array | Regex | Function | AsyncFunction
 					customCheck		: async (content, response)=>{return true;}, // optional, Function | AsyncFunction -> Run your own custom checks return false in case of errors
 					validStatus		: [200], // optional, Which http status should be considered non errors [defaults to 200-299]
@@ -109,7 +109,7 @@ export default {
 					mustFind		: '{\"detail\":\"Not authenticated\"}', // optional, String | Array | Regex | Function | AsyncFunction
 					mustNotFind		: ["Page not found", "cloudflare"], // optional, String | Array | Regex | Function | AsyncFunction
 					customCheck		: async (content, response)=>{return true;}, // optional, Function | AsyncFunction -> Run your own custom checks return false in case of errors
-					validStatus		: [200, 401], // optional, Which http status should be considered non errors [defaults to 200-299]
+					validStatus		: [200, 401, 403], // optional, Which http status should be considered non errors [defaults to 200-299]
 				},
 				{
 					id				: 'sd', // optional
