@@ -13,6 +13,13 @@ watchFile('./config.js', async ()=>{ // Dynamically reload config and watch it f
 
 const statusFile = './static/status.json';
 
+const getMillisUntilMidnight = () => {
+	const now = new Date();
+	const midnight = new Date(now);
+	midnight.setHours(24, 0, 0, 0);
+	return midnight - now;
+}
+
 const delay  = async t=>new Promise(r=>setTimeout(r, t));
 const handlize = s=>s.toLowerCase().replace(/[^a-z0-9]/g, ' ').trim().replace(/\s+/g, '-');
 const checkContent = async (content, criterion, negate=false) => {
@@ -332,5 +339,5 @@ while(true) {
 		console.error(e);
 	}
 	config.verbose && console.log('✅ Done');
-	await delay(config.interval * 60_000 - (Date.now() - startPulse));
+	await delay(getMillisUntilMidnight());
 }
