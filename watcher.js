@@ -162,8 +162,7 @@ const checkOnionService = async (host, port) => {
     }
 };
 
-// Extract pulse check into a separate function
-const runPulseCheck = async () => {
+while(true) {
 	config.verbose && console.log('🔄 Pulse');
 	let startPulse = Date.now();
 	let status;
@@ -340,24 +339,5 @@ const runPulseCheck = async () => {
 		console.error(e);
 	}
 	config.verbose && console.log('✅ Done');
-};
-
-// Run pulse check immediately on startup
-await runPulseCheck();
-
-// Schedule pulse check to run at midnight every day
-const scheduleMidnightCheck = async () => {
-	const millisUntilMidnight = getMillisUntilMidnight();
-	await delay(millisUntilMidnight);
-	await runPulseCheck();
-	setInterval(async () => {
-		await runPulseCheck();
-	}, 24 * 60 * 60 * 1000); // 24 hours
-};
-
-scheduleMidnightCheck();
-
-// Regular interval checks
-setInterval(async () => {
-	await runPulseCheck();
-}, config.interval);
+	await delay(getMillisUntilMidnight());
+}
