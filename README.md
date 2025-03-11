@@ -1,12 +1,17 @@
 # aPulse
-A one-file NodeJS server status monitoring/notification tool.
+A one-file NodeJS server status monitoring/notification tool.<br>
+Changed by [MarcUs7i](https://github.com/MarcUs7i)<br>
+Original repo without customizations: https://github.com/ybouane/aPulse
 
 # Demo
 Visit https://apulse.ybouane.com for a demo!
+<br>Or visit the customized live version on: https://status.marcus7i.net
 
 [<img src="screenshot.png" alt="aPulse — Server Status Open Source NodeJS Tool" />](https://apulse.ybouane.com)
 
 # Features
+- Changed it to update automatically on 00:00 (12:00 AM)
+- Onion site checks with local IPs (public IPs will also work, but not recommended)
 - Highly and easily configurable, edit the config.js file to add test endpoints and configure the watcher
 - Supports sending outage notifications by: Telegram, Discord, Slack, SMS (Twilio API), Email (SendGrid API)
 - Uses the Fetch API to test server-responses, you can configure GET, POST, PUT... requests and have full control over the fetch options.
@@ -54,6 +59,15 @@ export default {
 					mustNotFind		: /Page not found/i, // optional, String | Array | Regex | Function | AsyncFunction
 					customCheck		: async (content, response)=>{return true;}, // optional, Function | AsyncFunction -> Run your own custom checks return false in case of errors
 					validStatus		: [200], // optional, Which http status should be considered non errors [defaults to 200-299]
+				},
+				{
+					id				: 'onion-service', // optional
+					name			: 'Onion Service', // optional
+					link			: 'exampleonionaddress.onion:8333', // optional, displayed in dashboard and notifications
+					url				: 'exampleonionaddress.onion:8333', // required, used for connection check
+					onionIP         : '192.168.0.105', // optional, local IP to use for onion service check
+					customCheck		: async (content, response)=>{return true;}, // optional
+					validStatus		: ['SOCKET'], // required for onion services, specifies this is a socket connection check
 				}
 			]
 		}
@@ -61,11 +75,21 @@ export default {
 };
 ```
 
+## Onion Service Monitoring
+For checking the status of Tor onion services, we use a local IP approach. This is way more secure and prevents exposing your onion services to unnecessary public checks:
+
+1. Set the `url` field to your onion address with port (e.g. `exampleonionaddress.onion:8333`)
+2. Add an `onionIP` parameter with the local IP where the service is running (you can use public IPs aswell, but it's not recommended)
+3. Set `validStatus` to `['SOCKET']` to indicate this is a socket connection check
+4. The checker will try to connect to the specified IP:port to verify the service is running
+
 # Installation
 Clone the repo:
 ```shell
-git clone https://github.com/ybouane/aPulse.git
+git clone https://github.com/MarcUs7i/statusPage.git
 ```
+
+Change the config file, since I am sure, you don't want to get the status of my services :)
 
 Either run the watcher.js script directly (you need to keep it running in the background)
 ```shell
@@ -73,23 +97,6 @@ cd aPulse
 ```
 ```shell
 node watcher.js
-```
-
-Or use a tool like PM2 (prefered method):
-```shell
-npm install pm2 -g
-```
-Start watcher.json
-```shell
-pm2 start pm2.json
-```
-Configure pm2 to automatically start during startup
-```shell
-pm2 startup
-```
-Save current pm2 processes list
-```shell
-pm2 save
 ```
 
 ### Serving the status page
@@ -112,3 +119,5 @@ Or use any other tool to serve those files like the npm http-server package:
 cd static
 npx http-server -o ./
 ```
+
+Original repository from: https://github.com/ybouane/aPulse.git
