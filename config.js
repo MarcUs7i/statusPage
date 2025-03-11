@@ -52,8 +52,8 @@ export default {
 				{
 					id				: 'btcnd-onion', // optional
 					name			: 'Bitcoin Node (Onion)', // optional
-					link			: 'http://erkuzp5gzrcjqtrcuiku5whcjnioalwskgo3hjg5oq2mmailml7k7jad.onion:8333', // optional, for notifications and dashboard only, [defaults to endpoint.url], can be disabled by setting it to false
-					url				: 'http://erkuzp5gzrcjqtrcuiku5whcjnioalwskgo3hjg5oq2mmailml7k7jad.onion:8333', // required
+					link			: 'erkuzp5gzrcjqtrcuiku5whcjnioalwskgo3hjg5oq2mmailml7k7jad.onion:8333', // optional, for notifications and dashboard only, [defaults to endpoint.url], can be disabled by setting it to false
+					url				: 'erkuzp5gzrcjqtrcuiku5whcjnioalwskgo3hjg5oq2mmailml7k7jad.onion:8333', // required
 					onionIP         : '192.168.0.105', // optional, IP to use for onion service check
 					customCheck		: async (content, response)=>{return true;},
 					validStatus		: ['SOCKET'], // optional, Which http status should be considered non errors [defaults to 200-299]
