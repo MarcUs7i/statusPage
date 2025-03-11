@@ -224,8 +224,8 @@ while(true) {
 					try {
 						if (endpoint.url.includes('.onion')) {
 							let [host, port] = endpoint.url.replace('http://', '').split(':');
-							host = endpoint.id.includes('-POWERFUL') ? '192.168.0.105' : '127.0.0.1';
-							const result = await checkOnionService(host, port || 8333);
+							host = endpoint.onionIP || '127.0.0.1';
+							const result = await checkOnionService(host, port || 80);
 							
 							endpointStatus.t = Date.now();
 							endpointStatus.dur = 0;
