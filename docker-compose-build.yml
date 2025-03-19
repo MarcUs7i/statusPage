@@ -1,5 +1,5 @@
 services:
-  app:
+  statuspage:
     build:
       context: .
       dockerfile: Dockerfile

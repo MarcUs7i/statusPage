@@ -7,9 +7,10 @@ COPY package*.json ./
 RUN npm install
 
 COPY . .
-VOLUME /app/config.js
-EXPOSE 8080
-
-RUN echo '#!/bin/sh\nnode watcher.js & http-server ./static -p 8080\n' > /app/start.sh && \
+RUN echo '#!/bin/sh' > /app/start.sh && \
+    echo 'node watcher.js & http-server ./static -p 8080' >> /app/start.sh && \
     chmod +x /app/start.sh
+EXPOSE 8080
+VOLUME /app/config.js
+
 CMD ["/app/start.sh"]
