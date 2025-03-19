@@ -1,0 +1,9 @@
+services:
+  statuspage:
+    image: ghcr.io/marcus7i/statuspage:latest
+    container_name: statuspage
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./config.js:/app/config.js
