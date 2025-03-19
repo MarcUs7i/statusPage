@@ -137,6 +137,19 @@ export default {
 					validStatus		: [200], // optional, Which http status should be considered non errors [defaults to 200-299]
 				},
 				{
+					id				: 'saucekudasai', // optional
+					name			: 'SauceKudasai', // optional
+					link			: 'https://saucekudasai.marcus7i.net', // optional, for notifications and dashboard only, [defaults to endpoint.url], can be disabled by setting it to false
+					url				: 'https://saucekudasai.marcus7i.net', // required
+					request			: { // optional, fetch options
+						method: 'GET',
+					},
+					mustFind		: '', // optional, String | Array | Regex | Function | AsyncFunction
+					mustNotFind		: ["Page not found", "cloudflare"], // optional, String | Array | Regex | Function | AsyncFunction
+					customCheck		: async (content, response)=>{return true;}, // optional, Function | AsyncFunction -> Run your own custom checks return false in case of errors
+					validStatus		: [200], // optional, Which http status should be considered non errors [defaults to 200-299]
+				},
+				{
 					id				: 'xmrnd-onion', // optional
 					name			: 'Monero Node (Onion)', // optional
 					link			: 'bto4zcx3tbss5f6mhbc4guumv66og2udpg3n26254f2sbkdvhnr2bwyd.onion:18081', // optional, for notifications and dashboard only, [defaults to endpoint.url], can be disabled by setting it to false
