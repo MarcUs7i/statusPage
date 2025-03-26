@@ -6,6 +6,10 @@ on:
   release:
     types: [created]
     # Automatic trigger on release creation
+  push:
+    branches:
+      - main
+    # Automatic trigger on push to main branch
 
 jobs:
   build:
