@@ -165,8 +165,8 @@ export default {
 				{
 					id				: 'xmrnd-onion', // optional
 					name			: 'Monero Node (Onion)', // optional
-					link			: 'bto4zcx3tbss5f6mhbc4guumv66og2udpg3n26254f2sbkdvhnr2bwyd.onion:18081', // optional, for notifications and dashboard only, [defaults to endpoint.url], can be disabled by setting it to false
-					url				: 'bto4zcx3tbss5f6mhbc4guumv66og2udpg3n26254f2sbkdvhnr2bwyd.onion:18081', // required
+					link			: 'rfonivq2okzbxyi36g4kqejcqsame3g5aokbsssvcmyrfjhacprf4sqd.onion:18089', // optional, for notifications and dashboard only, [defaults to endpoint.url], can be disabled by setting it to false
+					url				: 'rfonivq2okzbxyi36g4kqejcqsame3g5aokbsssvcmyrfjhacprf4sqd.onion:18089', // required
 					onionIP		    : '192.168.0.105', // optional, IP to use for onion service check
 					request			: null,
 					customCheck		: async (content, response)=>{return true;},
