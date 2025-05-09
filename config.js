@@ -49,7 +49,7 @@ export default {
 					customCheck		: async (content, response)=>{return true;}, // optional, Function | AsyncFunction -> Run your own custom checks return false in case of errors
 					validStatus		: [200], // optional, Which http status should be considered non errors [defaults to 200-299]
 				},
-				{
+				/*{
 					id				: 'btcnd-onion', // optional
 					name			: 'Bitcoin Node (Onion)', // optional
 					link			: 'erkuzp5gzrcjqtrcuiku5whcjnioalwskgo3hjg5oq2mmailml7k7jad.onion:8333', // optional, for notifications and dashboard only, [defaults to endpoint.url], can be disabled by setting it to false
@@ -57,7 +57,7 @@ export default {
 					onionIP         : '192.168.0.105', // optional, IP to use for onion service check
 					customCheck		: async (content, response)=>{return true;},
 					validStatus		: ['SOCKET'], // optional, Which http status should be considered non errors [defaults to 200-299]
-				},
+				},*/
 				{
 					id				: 'fs', // optional
 					name			: 'File Sharing', // optional
@@ -114,7 +114,7 @@ export default {
 					id				: 'sd', // optional
 					name			: 'Stable Diffusion API', // optional
 					link			: 'https://sd.marcus7i.net', // optional, for notifications and dashboard only, [defaults to endpoint.url], can be disabled by setting it to false
-					url				: 'https://sd.marcus7i.net', // required
+					url				: 'http://192.168.0.106:9998', // required
 					request			: { // optional, fetch options
 						method: 'GET',
 					},
